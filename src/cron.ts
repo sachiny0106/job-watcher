@@ -19,6 +19,7 @@ async function main(): Promise<void> {
 
   const startedAt = Date.now();
   const allNew: Job[] = [];
+  const pendingByWatch = new Map<string, Job[]>();
   let okCount = 0;
   let errCount = 0;
 
@@ -29,12 +30,17 @@ async function main(): Promise<void> {
       const seen = getSeenIds(name);
 
       const fresh = jobs.filter((j) => !seen.has(j.id));
-      markSeen(name, fresh);
-
       const relevant = fresh.filter((j) => passesFilter(j, filters));
+      const filteredOut = fresh.filter((j) => !relevant.includes(j));
+
+      markSeen(name, filteredOut);
+
+      const pending: Job[] = [];
       for (const j of relevant) {
         if (!allNew.some((existing) => existing.id === j.id)) allNew.push(j);
+        pending.push(j);
       }
+      if (pending.length > 0) pendingByWatch.set(name, pending);
 
       logRun(name, "ok");
       okCount++;
@@ -78,7 +84,22 @@ async function main(): Promise<void> {
     : allNew;
   if (geminiKey) {
     const dropped = allNew.length - toNotify.length;
-    if (dropped > 0) console.log(`AI rejected/below-threshold ${dropped} candidate(s) (min score ${MIN_SCORE}); kept ${toNotify.length}`);
+    if (dropped > 0)
+      console.log(
+        `AI rejected/below-threshold ${dropped} candidate(s) (min score ${MIN_SCORE}); kept ${toNotify.length}`
+      );
+  }
+
+  for (const [watchName, pending] of pendingByWatch) {
+    let toMark: Job[];
+    if (geminiKey) {
+      toMark = pending.filter((j) => verdicts.get(j.id));
+    } else {
+      toMark = pending;
+    }
+    if (toMark.length > 0) markSeen(watchName, toMark);
+    const retry = pending.length - toMark.length;
+    if (retry > 0) console.log(`  [${watchName}] retaining ${retry} unscored job(s) for next run`);
   }
 
   if (toNotify.length > 0) {
