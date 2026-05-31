@@ -220,14 +220,22 @@ const BatchSchema = {
   },
 };
 
-function loadKeys(): string[] {
-  const keys: string[] = [];
+type Provider = { kind: "gemini" | "openai"; key: string };
+
+function loadProviders(): Provider[] {
+  const out: Provider[] = [];
   for (const [k, v] of Object.entries(process.env)) {
-    if (/^GOOGLE_API_KEY(_\d+)?$/i.test(k) && typeof v === "string" && v.trim()) {
-      keys.push(v.trim());
-    }
+    if (typeof v !== "string" || !v.trim()) continue;
+    if (/^GOOGLE_API_KEY(_\d+)?$/i.test(k)) out.push({ kind: "gemini", key: v.trim() });
+    else if (/^OPENAI_API_KEY(_\d+)?$/i.test(k)) out.push({ kind: "openai", key: v.trim() });
   }
-  return Array.from(new Set(keys));
+  const seen = new Set<string>();
+  return out.filter((p) => {
+    const id = `${p.kind}:${p.key}`;
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
 }
 
 function shuffled<T>(arr: T[]): T[] {
@@ -237,61 +245,95 @@ function shuffled<T>(arr: T[]): T[] {
     .map(([, x]) => x);
 }
 
-export async function scoreJobs(jobs: Job[], profile: Profile, _apiKey: string): Promise<Map<string, FitVerdict>> {
-  const verdicts = new Map<string, FitVerdict>();
-  if (jobs.length === 0) return verdicts;
+function mask(key: string): string {
+  return `${key.slice(0, 10)}…${key.slice(-4)}`;
+}
 
-  const keys = shuffled(loadKeys());
-  if (keys.length === 0) {
-    console.warn("[llm-score] no Google API keys configured");
-    return verdicts;
-  }
-
+async function callGemini(provider: Provider, prompt: string, jobCount: number): Promise<string | null> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
   const body = {
-    contents: [{ parts: [{ text: buildBatchPrompt(jobs, profile) }] }],
+    contents: [{ parts: [{ text: prompt }] }],
     generationConfig: {
       responseMimeType: "application/json",
       responseSchema: BatchSchema,
       temperature: 0,
-      maxOutputTokens: Math.min(32000, 400 * jobs.length + 2000),
+      maxOutputTokens: Math.min(32000, 400 * jobCount + 2000),
       thinkingConfig: { thinkingBudget: 0 },
     },
   };
+  const { data } = await axios.post<{ candidates?: { content?: { parts?: { text?: string }[] } }[] }>(url, body, {
+    timeout: 60_000,
+    headers: { "Content-Type": "application/json", "X-goog-api-key": provider.key },
+  });
+  return data.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
+}
 
-  let resp;
-  outer: for (let keyIdx = 0; keyIdx < keys.length; keyIdx++) {
-    const key = keys[keyIdx];
-    const masked = `${key.slice(0, 10)}…${key.slice(-4)}`;
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
-    for (let attempt = 0; attempt < 2; attempt++) {
-      try {
-        resp = await axios.post<{ candidates?: { content?: { parts?: { text?: string }[] } }[] }>(url, body, {
-          timeout: 60_000,
-          headers: { "Content-Type": "application/json", "X-goog-api-key": key },
-        });
-        console.log(`[llm-score] succeeded with key ${masked}`);
-        break outer;
-      } catch (err) {
-        const ax = err as { response?: { status?: number; data?: unknown }; message?: string };
-        const status = ax?.response?.status;
-        if (status === 429 && attempt === 0) {
-          console.warn(`[llm-score] 429 on key ${masked}, retrying once after 4s`);
-          await new Promise((r) => setTimeout(r, 4000));
-          continue;
-        }
-        const errBody = ax?.response?.data ? JSON.stringify(ax.response.data).slice(0, 300) : "";
-        console.warn(`[llm-score] key ${masked} failed: status=${status} ${errBody}`);
-        break;
-      }
-    }
+async function callOpenAI(provider: Provider, prompt: string): Promise<string | null> {
+  const url = "https://api.openai.com/v1/chat/completions";
+  const body = {
+    model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+    response_format: { type: "json_object" },
+    temperature: 0,
+    messages: [
+      {
+        role: "system",
+        content: "You return strict JSON only. The user's instruction will specify a JSON array. Wrap it as {\"verdicts\": [...]}.",
+      },
+      { role: "user", content: prompt },
+    ],
+  };
+  const { data } = await axios.post<{ choices?: { message?: { content?: string } }[] }>(url, body, {
+    timeout: 60_000,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${provider.key}`,
+    },
+  });
+  const content = data.choices?.[0]?.message?.content ?? null;
+  if (!content) return null;
+  try {
+    const obj = JSON.parse(content);
+    if (Array.isArray(obj)) return JSON.stringify(obj);
+    if (Array.isArray(obj?.verdicts)) return JSON.stringify(obj.verdicts);
+    const firstArrayKey = Object.keys(obj).find((k) => Array.isArray(obj[k]));
+    if (firstArrayKey) return JSON.stringify(obj[firstArrayKey]);
+    return content;
+  } catch {
+    return content;
   }
-  if (!resp) return verdicts;
+}
 
-  const text = resp.data.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!text) {
-    console.warn("[llm-score] empty response text; full candidate:", JSON.stringify(resp.data.candidates?.[0] ?? {}).slice(0, 400));
+export async function scoreJobs(jobs: Job[], profile: Profile, _apiKey: string): Promise<Map<string, FitVerdict>> {
+  const verdicts = new Map<string, FitVerdict>();
+  if (jobs.length === 0) return verdicts;
+
+  const providers = shuffled(loadProviders());
+  if (providers.length === 0) {
+    console.warn("[llm-score] no LLM API keys configured (need GOOGLE_API_KEY or OPENAI_API_KEY)");
     return verdicts;
   }
+
+  const prompt = buildBatchPrompt(jobs, profile);
+  let text: string | null = null;
+
+  for (const p of providers) {
+    const tag = `${p.kind} ${mask(p.key)}`;
+    try {
+      text = p.kind === "gemini" ? await callGemini(p, prompt, jobs.length) : await callOpenAI(p, prompt);
+      if (text) {
+        console.log(`[llm-score] succeeded with ${tag}`);
+        break;
+      }
+      console.warn(`[llm-score] ${tag} returned empty text, trying next`);
+    } catch (err) {
+      const ax = err as { response?: { status?: number; data?: unknown }; message?: string };
+      const status = ax?.response?.status;
+      const errBody = ax?.response?.data ? JSON.stringify(ax.response.data).slice(0, 250) : "";
+      console.warn(`[llm-score] ${tag} failed: status=${status} ${errBody}`);
+    }
+  }
+  if (!text) return verdicts;
+
   let parsed: unknown;
   try {
     parsed = JSON.parse(text);
