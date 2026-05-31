@@ -1,13 +1,37 @@
 {
   "amazon":       { "ats": "amazon" },
+
   "stripe":       { "ats": "greenhouse",      "slug": "stripe" },
   "airbnb":       { "ats": "greenhouse",      "slug": "airbnb" },
+  "arcesium":     { "ats": "greenhouse",      "slug": "arcesiumllc" },
+  "workato":      { "ats": "greenhouse",      "slug": "workato" },
+  "pinterest":    { "ats": "greenhouse",      "slug": "pinterest" },
+  "robinhood":    { "ats": "greenhouse",      "slug": "robinhood" },
+  "twilio":       { "ats": "greenhouse",      "slug": "twilio" },
+  "datadog":      { "ats": "greenhouse",      "slug": "datadog" },
+  "mongodb":      { "ats": "greenhouse",      "slug": "mongodb" },
+  "smartsheet":   { "ats": "greenhouse",      "slug": "smartsheet" },
+  "groww":        { "ats": "greenhouse",      "slug": "groww" },
+  "headout":      { "ats": "greenhouse",      "slug": "headoutcareers" },
+  "postman":      { "ats": "greenhouse",      "slug": "postman" },
+  "reddit":       { "ats": "greenhouse",      "slug": "reddit" },
+
+  "cred":         { "ats": "lever",           "slug": "cred" },
+  "atlassian":    { "ats": "lever",           "slug": "atlassian" },
+  "hevodata":     { "ats": "lever",           "slug": "hevodata" },
+  "meesho":       { "ats": "lever",           "slug": "meesho" },
+  "eternal":      { "ats": "lever",           "slug": "eternal" },
+
   "notion":       { "ats": "ashby",           "slug": "notion" },
   "ramp":         { "ats": "ashby",           "slug": "ramp" },
   "linear":       { "ats": "ashby",           "slug": "linear" },
   "vanta":        { "ats": "ashby",           "slug": "vanta" },
-  "cred":         { "ats": "lever",           "slug": "cred" },
-  "atlassian":    { "ats": "lever",           "slug": "atlassian" },
+  "snowflake":    { "ats": "ashby",           "slug": "snowflake" },
+
   "freshworks":   { "ats": "smartrecruiters", "slug": "Freshworks" },
-  "browserstack": { "ats": "workday",         "tenant": "browserstack", "cluster": "wd3", "site": "External" }
+  "servicenow":   { "ats": "smartrecruiters", "slug": "servicenow" },
+  "docusign":     { "ats": "smartrecruiters", "slug": "docusign" },
+
+  "browserstack": { "ats": "workday",         "tenant": "browserstack", "cluster": "wd3",   "site": "External" },
+  "alteryx":      { "ats": "workday",         "tenant": "alteryx",      "cluster": "wd108", "site": "AlteryxCareers" }
 }

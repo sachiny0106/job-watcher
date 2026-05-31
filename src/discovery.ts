@@ -89,6 +89,62 @@ Return STRICT JSON with shape {"ats": <one of: greenhouse|lever|ashby|workday|sm
   }
 }
 
+async function probeSlugCandidates(companyName: string): Promise<DiscoveryResult | null> {
+  const key = companyName.toLowerCase().trim().replace(/\s+/g, "");
+  const variants = Array.from(new Set([
+    key,
+    key.replace(/[-_.]/g, ""),
+    `${key}careers`,
+    `${key}llc`,
+    `${key}inc`,
+    `${key}hq`,
+    `the${key}`,
+  ]));
+
+  const atsList: { ats: AtsKind; url: (slug: string) => string; check: (data: unknown) => boolean }[] = [
+    {
+      ats: "greenhouse",
+      url: (s) => `https://boards-api.greenhouse.io/v1/boards/${s}/jobs?content=false`,
+      check: (d) => !!(d as { jobs?: unknown[] })?.jobs,
+    },
+    {
+      ats: "lever",
+      url: (s) => `https://api.lever.co/v0/postings/${s}?mode=json`,
+      check: (d) => Array.isArray(d),
+    },
+    {
+      ats: "ashby",
+      url: (s) => `https://api.ashbyhq.com/posting-api/job-board/${s}`,
+      check: (d) => !!(d as { jobs?: unknown[] })?.jobs,
+    },
+    {
+      ats: "smartrecruiters",
+      url: (s) => `https://api.smartrecruiters.com/v1/companies/${s}/postings?limit=1`,
+      check: (d) => !!(d as { content?: unknown[] })?.content,
+    },
+  ];
+
+  for (const slug of variants) {
+    for (const { ats, url, check } of atsList) {
+      try {
+        const { data, status } = await axios.get(url(slug), {
+          timeout: 8000,
+          validateStatus: () => true,
+          headers: { "User-Agent": "job-watcher/0.1 (personal use)", Accept: "application/json" },
+        });
+        if (status !== 200) continue;
+        if (!check(data)) continue;
+        const config: CompanyConfig = { ats, slug };
+        const count = await probe(config, companyName);
+        if (count !== null && count > 0) return { ok: true, config, jobCount: count };
+      } catch {
+        // continue
+      }
+    }
+  }
+  return null;
+}
+
 export async function discover(companyName: string): Promise<DiscoveryResult> {
   const key = companyName.toLowerCase().trim();
 
@@ -98,6 +154,9 @@ export async function discover(companyName: string): Promise<DiscoveryResult> {
     if (count !== null) return { ok: true, config, jobCount: count };
     return { ok: false, reason: `${key} adapter failed to fetch` };
   }
+
+  const slugProbe = await probeSlugCandidates(companyName);
+  if (slugProbe) return slugProbe;
 
   const candidateUrls = [
     `https://${key}.com/careers`,
