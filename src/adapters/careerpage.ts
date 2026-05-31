@@ -11,6 +11,8 @@ interface ExtractedJob {
   postedAt?: string;
 }
 
+type Provider = { kind: "gemini" | "openai"; key: string };
+
 function stripHtml(s: string): string {
   return s
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -27,34 +29,44 @@ function hash(s: string): string {
   return (h >>> 0).toString(36);
 }
 
-function loadKeys(): string[] {
-  const out: string[] = [];
+function loadProviders(): Provider[] {
+  const out: Provider[] = [];
   for (const [k, v] of Object.entries(process.env)) {
-    if (/^GOOGLE_API_KEY(_\d+)?$/i.test(k) && typeof v === "string" && v.trim()) out.push(v.trim());
+    if (typeof v !== "string" || !v.trim()) continue;
+    if (/^GOOGLE_API_KEY(_\d+)?$/i.test(k)) out.push({ kind: "gemini", key: v.trim() });
+    else if (/^OPENAI_API_KEY(_\d+)?$/i.test(k)) out.push({ kind: "openai", key: v.trim() });
   }
-  return Array.from(new Set(out));
+  const seen = new Set<string>();
+  return out.filter((p) => {
+    const id = `${p.kind}:${p.key}`;
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
 }
 
-async function geminiExtract(html: string, baseUrl: string): Promise<ExtractedJob[]> {
-  const keys = loadKeys();
-  if (keys.length === 0) return [];
-  const key = keys[Math.floor(Math.random() * keys.length)];
+function shuffled<T>(arr: T[]): T[] {
+  return arr
+    .map((x) => [Math.random(), x] as const)
+    .sort((a, b) => a[0] - b[0])
+    .map(([, x]) => x);
+}
 
-  const trimmed = stripHtml(html).slice(0, 25_000);
-  const prompt = `You are extracting open job postings from a company's careers page text. The page may have been server-rendered HTML or scraped from a JS app.
+const buildPrompt = (cleanText: string, baseUrl: string): string => `You are extracting open job postings from a company's careers page text.
 
 PAGE TEXT (truncated):
-${trimmed}
+${cleanText}
 
 BASE URL: ${baseUrl}
 
-Return a strict JSON array. Each item: {"title": "<job title>", "url": "<absolute url to apply or details>", "location": "<city/country if found, else empty>", "postedAt": "<iso date if found, else empty>"}. If the page does not list jobs, return [].
+Return strict JSON. Each item: {"title": "<job title>", "url": "<absolute url>", "location": "<city/country or empty>", "postedAt": "<iso date or empty>"}. If no jobs, return [].
 Rules:
 - Only include real job postings, not nav links or marketing copy.
 - Skip duplicates.
 - Resolve relative URLs against BASE URL.
 - Cap at 100 entries.`;
 
+async function callGemini(provider: Provider, prompt: string): Promise<string | null> {
   const model = process.env.GEMINI_MODEL || "gemini-flash-latest";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
   const body = {
@@ -79,28 +91,76 @@ Rules:
       thinkingConfig: { thinkingBudget: 0 },
     },
   };
-  try {
-    const { data } = await axios.post<{ candidates?: { content?: { parts?: { text?: string }[] } }[] }>(url, body, {
+  const { data } = await axios.post<{ candidates?: { content?: { parts?: { text?: string }[] } }[] }>(url, body, {
+    timeout: 60_000,
+    headers: { "Content-Type": "application/json", "X-goog-api-key": provider.key },
+  });
+  return data.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
+}
+
+async function callOpenAI(provider: Provider, prompt: string): Promise<string | null> {
+  const body = {
+    model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+    response_format: { type: "json_object" },
+    temperature: 0,
+    messages: [
+      { role: "system", content: "Reply with JSON {\"jobs\": [...]} where jobs is the array described by the user." },
+      { role: "user", content: prompt },
+    ],
+  };
+  const { data } = await axios.post<{ choices?: { message?: { content?: string } }[] }>(
+    "https://api.openai.com/v1/chat/completions",
+    body,
+    {
       timeout: 60_000,
-      headers: { "Content-Type": "application/json", "X-goog-api-key": key },
-    });
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) return [];
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(text);
-    } catch {
-      const m = text.match(/\[[\s\S]*\]/);
-      if (!m) return [];
-      parsed = JSON.parse(m[0]);
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.key}` },
     }
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter((x): x is ExtractedJob => !!x && typeof (x as ExtractedJob).title === "string" && typeof (x as ExtractedJob).url === "string");
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    console.warn(`[careerpage] gemini extract failed: ${msg}`);
-    return [];
+  );
+  const content = data.choices?.[0]?.message?.content ?? null;
+  if (!content) return null;
+  try {
+    const obj = JSON.parse(content);
+    if (Array.isArray(obj)) return JSON.stringify(obj);
+    if (Array.isArray(obj?.jobs)) return JSON.stringify(obj.jobs);
+    const firstArrayKey = Object.keys(obj).find((k) => Array.isArray(obj[k]));
+    if (firstArrayKey) return JSON.stringify(obj[firstArrayKey]);
+  } catch {
+    // fall through
   }
+  return content;
+}
+
+async function llmExtract(html: string, baseUrl: string): Promise<ExtractedJob[]> {
+  const providers = shuffled(loadProviders());
+  if (providers.length === 0) return [];
+  const prompt = buildPrompt(stripHtml(html).slice(0, 25_000), baseUrl);
+
+  let text: string | null = null;
+  for (const p of providers) {
+    const tag = `${p.kind} ${p.key.slice(0, 8)}…`;
+    try {
+      text = p.kind === "gemini" ? await callGemini(p, prompt) : await callOpenAI(p, prompt);
+      if (text) break;
+    } catch (err) {
+      const ax = err as { response?: { status?: number }; message?: string };
+      const status = ax?.response?.status;
+      console.warn(`[careerpage] extract ${tag} failed status=${status} ${ax?.message ?? ""}`);
+    }
+  }
+  if (!text) return [];
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    const m = text.match(/\[[\s\S]*\]/);
+    if (!m) return [];
+    parsed = JSON.parse(m[0]);
+  }
+  if (!Array.isArray(parsed)) return [];
+  return parsed.filter((x): x is ExtractedJob =>
+    !!x && typeof (x as ExtractedJob).title === "string" && typeof (x as ExtractedJob).url === "string"
+  );
 }
 
 async function renderWithPlaywright(url: string, waitFor?: string): Promise<string> {
@@ -109,15 +169,19 @@ async function renderWithPlaywright(url: string, waitFor?: string): Promise<stri
   try {
     const ctx = await browser.newContext({ userAgent: UA });
     const page = await ctx.newPage();
-    await page.goto(url, { waitUntil: "networkidle", timeout: 45_000 });
+    try {
+      await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
+    } catch {
+      // dom may have partially loaded; continue
+    }
     if (waitFor) {
       try {
         await page.waitForSelector(waitFor, { timeout: 15_000 });
       } catch {
-        // continue with whatever loaded
+        // continue
       }
     } else {
-      await page.waitForTimeout(2500);
+      await page.waitForTimeout(3500);
     }
     return await page.content();
   } finally {
@@ -146,7 +210,7 @@ export const careerpageAdapter: Adapter = {
       html = typeof data === "string" ? data : String(data);
     }
 
-    const extracted = await geminiExtract(html, url);
+    const extracted = await llmExtract(html, url);
     return extracted.map((j) => ({
       id: `cp-${hash(j.url || j.title)}`,
       company,
