@@ -1,0 +1,13 @@
+{
+  "amazon":       { "ats": "amazon" },
+  "stripe":       { "ats": "greenhouse",      "slug": "stripe" },
+  "airbnb":       { "ats": "greenhouse",      "slug": "airbnb" },
+  "notion":       { "ats": "ashby",           "slug": "notion" },
+  "ramp":         { "ats": "ashby",           "slug": "ramp" },
+  "linear":       { "ats": "ashby",           "slug": "linear" },
+  "vanta":        { "ats": "ashby",           "slug": "vanta" },
+  "cred":         { "ats": "lever",           "slug": "cred" },
+  "atlassian":    { "ats": "lever",           "slug": "atlassian" },
+  "freshworks":   { "ats": "smartrecruiters", "slug": "Freshworks" },
+  "browserstack": { "ats": "workday",         "tenant": "browserstack", "cluster": "wd3", "site": "External" }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "job-watcher",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Self-hosted agent that monitors company career pages and job boards, then notifies via Telegram.",
+  "type": "module",
+  "scripts": {
+    "cron": "tsx src/cron.ts",
+    "bot": "tsx src/bot.ts",
+    "discover": "tsx src/discovery.ts",
+    "build": "tsc -p .",
+    "typecheck": "tsc -p . --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "axios": "^1.7.9",
+    "better-sqlite3": "^11.7.0",
+    "dotenv": "^16.4.7",
+    "node-telegram-bot-api": "^0.66.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.5",
+    "@types/node-telegram-bot-api": "^0.64.7",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
