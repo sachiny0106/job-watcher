@@ -69,15 +69,16 @@ async function main(): Promise<void> {
     console.log("GOOGLE_API_KEY not set — skipping AI fit check, sending all kept jobs");
   }
 
+  const MIN_SCORE = 5;
   const toNotify = geminiKey
     ? allNew.filter((j) => {
         const v = verdicts.get(j.id);
-        return v && v.fit !== "no";
+        return v && v.fit !== "no" && v.score >= MIN_SCORE;
       })
     : allNew;
   if (geminiKey) {
     const dropped = allNew.length - toNotify.length;
-    if (dropped > 0) console.log(`AI rejected/uncertain ${dropped} candidate(s); kept ${toNotify.length}`);
+    if (dropped > 0) console.log(`AI rejected/below-threshold ${dropped} candidate(s) (min score ${MIN_SCORE}); kept ${toNotify.length}`);
   }
 
   if (toNotify.length > 0) {
