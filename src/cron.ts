@@ -11,10 +11,35 @@ import { loadProfile, scoreJobs, type FitVerdict } from "./llm-score.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const COMPANIES_PATH = path.resolve(__dirname, "..", "companies.json");
+const CURSOR_PATH = path.resolve(__dirname, "..", ".cron-cursor");
+const BATCH_SIZE = parseInt(process.env.CRON_BATCH_SIZE || "50", 10);
+
+function loadCursor(): number {
+  try {
+    const n = parseInt(fs.readFileSync(CURSOR_PATH, "utf8").trim(), 10);
+    return isFinite(n) && n >= 0 ? n : 0;
+  } catch {
+    return 0;
+  }
+}
+function saveCursor(n: number): void {
+  fs.writeFileSync(CURSOR_PATH, String(n) + "\n", "utf8");
+}
 
 async function main(): Promise<void> {
   const raw = fs.readFileSync(COMPANIES_PATH, "utf8");
-  const companies = CompaniesFileSchema.parse(JSON.parse(raw));
+  const allCompanies = CompaniesFileSchema.parse(JSON.parse(raw));
+  const entries = Object.entries(allCompanies);
+  const cursor = loadCursor() % Math.max(entries.length, 1);
+  const end = Math.min(cursor + BATCH_SIZE, entries.length);
+  const batch = entries.slice(cursor, end);
+  const wrapNeeded = batch.length < BATCH_SIZE && entries.length > BATCH_SIZE;
+  if (wrapNeeded) batch.push(...entries.slice(0, BATCH_SIZE - batch.length));
+  const nextCursor = (cursor + BATCH_SIZE) % entries.length;
+  const companies = Object.fromEntries(batch);
+  console.log(
+    `processing batch ${cursor}..${cursor + batch.length - 1} of ${entries.length} (next cursor will be ${nextCursor})`
+  );
   const filters = loadFilters();
 
   const startedAt = Date.now();
@@ -117,6 +142,7 @@ async function main(): Promise<void> {
     await notifyText(`job-watcher: ${errCount} adapter error(s) this run`);
   }
 
+  saveCursor(nextCursor);
   closeDb();
 }
 

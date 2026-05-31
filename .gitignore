@@ -4,4 +4,7 @@ dist/
 *.local.json
 *.log
 .DS_Store
+state.sqlite-wal
+state.sqlite-shm
+state.sqlite-journal
 # state.sqlite IS committed by GH Actions, so don't ignore it
