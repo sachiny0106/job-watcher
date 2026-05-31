@@ -23,7 +23,16 @@ if (!TOKEN) {
 
 const bot = new TelegramBot(TOKEN, { polling: true });
 
-function loadCompanies(): CompaniesFile {
+async function loadCompanies(): Promise<CompaniesFile> {
+  if (process.env.COMPANIES_FROM_GITHUB === "1" && GITHUB_REPO) {
+    const url = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/companies.json`;
+    try {
+      const { data } = await axios.get<unknown>(url, { timeout: 10_000, responseType: "json" });
+      return CompaniesFileSchema.parse(data);
+    } catch (e) {
+      console.warn("[bot] failed to fetch companies.json from GitHub, falling back to local file:", e instanceof Error ? e.message : e);
+    }
+  }
   const raw = fs.readFileSync(COMPANIES_PATH, "utf8");
   return CompaniesFileSchema.parse(JSON.parse(raw));
 }
@@ -94,9 +103,9 @@ bot.onText(/^\/start$|^\/help$/, (msg) => {
   );
 });
 
-bot.onText(/^\/list/, (msg) => {
+bot.onText(/^\/list/, async (msg) => {
   if (!authorized(msg.chat.id)) return;
-  const c = loadCompanies();
+  const c = await loadCompanies();
   const names = Object.keys(c).sort();
   if (names.length === 0) {
     bot.sendMessage(msg.chat.id, "no companies watched yet — try /add stripe");
@@ -118,7 +127,7 @@ bot.onText(/^\/add\s+(.+)$/, async (msg, m) => {
     await bot.sendMessage(msg.chat.id, `❌ couldn't add ${name}: ${r.reason ?? "unknown"}`);
     return;
   }
-  const companies = loadCompanies();
+  const companies = await loadCompanies();
   companies[name] = r.config;
   const text = saveCompaniesLocal(companies);
   const slugBit = r.config.slug
@@ -136,7 +145,7 @@ bot.onText(/^\/remove\s+(.+)$/, async (msg, m) => {
   if (!authorized(msg.chat.id)) return;
   if (!m) return;
   const name = m[1].trim().toLowerCase();
-  const companies = loadCompanies();
+  const companies = await loadCompanies();
   if (!(name in companies)) {
     await bot.sendMessage(msg.chat.id, `not watching ${name}`);
     return;

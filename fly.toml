@@ -1,0 +1,19 @@
+app = "job-watcher-bot"
+primary_region = "bom"
+
+[build]
+
+[env]
+  GITHUB_REPO = "sachiny0106/job-watcher"
+  GITHUB_BRANCH = "main"
+  COMPANIES_FROM_GITHUB = "1"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
+
+[deploy]
+  strategy = "immediate"
+
+[processes]
+  bot = "npx tsx src/bot.ts"
