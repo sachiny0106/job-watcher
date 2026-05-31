@@ -33,5 +33,10 @@
   "docusign":     { "ats": "smartrecruiters", "slug": "docusign" },
 
   "browserstack": { "ats": "workday",         "tenant": "browserstack", "cluster": "wd3",   "site": "External" },
-  "alteryx":      { "ats": "workday",         "tenant": "alteryx",      "cluster": "wd108", "site": "AlteryxCareers" }
+  "alteryx":      { "ats": "workday",         "tenant": "alteryx",      "cluster": "wd108", "site": "AlteryxCareers" },
+  "adobe":        { "ats": "workday",         "tenant": "adobe",        "cluster": "wd5",   "site": "external_experienced" },
+  "nvidia":       { "ats": "workday",         "tenant": "nvidia",       "cluster": "wd5",   "site": "nvidiaexternalcareersite" },
+  "salesforce":   { "ats": "workday",         "tenant": "salesforce",   "cluster": "wd12",  "site": "External_Career_Site" },
+  "walmart":      { "ats": "workday",         "tenant": "walmart",      "cluster": "wd5",   "site": "WalmartExternal" },
+  "cisco":        { "ats": "workday",         "tenant": "cisco",        "cluster": "wd5",   "site": "Cisco_Careers" }
 }

@@ -27,6 +27,7 @@ export const AtsKindSchema = z.enum([
   "instahyre",
   "naukri",
   "serpapi",
+  "careerpage",
 ]);
 export type AtsKind = z.infer<typeof AtsKindSchema>;
 
@@ -36,6 +37,7 @@ export const CompanyConfigSchema = z.object({
   tenant: z.string().optional(),
   site: z.string().optional(),
   cluster: z.string().optional(),
+  url: z.string().url().optional(),
 });
 export type CompanyConfig = z.infer<typeof CompanyConfigSchema>;
 

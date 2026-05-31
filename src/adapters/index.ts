@@ -11,6 +11,7 @@ import { appleAdapter } from "./apple.js";
 import { metaAdapter } from "./meta.js";
 import { instahyreAdapter } from "./instahyre.js";
 import { naukriAdapter } from "./naukri.js";
+import { careerpageAdapter } from "./careerpage.js";
 
 const registry: Partial<Record<AtsKind, Adapter>> = {
   greenhouse: greenhouseAdapter,
@@ -25,6 +26,7 @@ const registry: Partial<Record<AtsKind, Adapter>> = {
   meta: metaAdapter,
   instahyre: instahyreAdapter,
   naukri: naukriAdapter,
+  careerpage: careerpageAdapter,
 };
 
 export function getAdapter(kind: AtsKind): Adapter {
