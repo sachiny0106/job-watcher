@@ -40,6 +40,8 @@
   "worldquant":   { "ats": "greenhouse",      "slug": "worldquant" },
   "block":        { "ats": "greenhouse",      "slug": "block" },
   "togetherai":   { "ats": "greenhouse",      "slug": "togetherai" },
+  "lyft":         { "ats": "greenhouse",      "slug": "lyft" },
+  "instacart":    { "ats": "greenhouse",      "slug": "instacart" },
   "coupang":      { "ats": "greenhouse",      "slug": "coupang" },
   "harness":      { "ats": "greenhouse",      "slug": "harnessinc" },
   "chime":        { "ats": "greenhouse",      "slug": "chime" },
@@ -79,6 +81,7 @@
   "airwallex":    { "ats": "ashby",           "slug": "airwallex" },
   "deel":         { "ats": "ashby",           "slug": "deel" },
   "render":       { "ats": "ashby",           "slug": "render" },
+  "cohere":       { "ats": "ashby",           "slug": "cohere" },
 
   "freshworks":   { "ats": "smartrecruiters", "slug": "Freshworks" },
   "servicenow":   { "ats": "smartrecruiters", "slug": "servicenow" },
@@ -89,6 +92,7 @@
   "visa":         { "ats": "smartrecruiters", "slug": "visa" },
   "bytedance":    { "ats": "smartrecruiters", "slug": "bytedance" },
   "uber":         { "ats": "smartrecruiters", "slug": "uber" },
+  "wayfair":      { "ats": "smartrecruiters", "slug": "wayfair" },
 
   "browserstack": { "ats": "workday",         "tenant": "browserstack", "cluster": "wd3",   "site": "External" },
   "alteryx":      { "ats": "workday",         "tenant": "alteryx",      "cluster": "wd108", "site": "AlteryxCareers" },
