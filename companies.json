@@ -123,5 +123,6 @@
   "jupiter":      { "ats": "careerpage", "renderJs": true, "url": "https://jupiter.money/careers/" },
   "pharmeasy":    { "ats": "careerpage", "renderJs": true, "url": "https://careers.pharmeasy.in/" },
   "bigbasket":    { "ats": "careerpage", "renderJs": true, "url": "https://www.bigbasket.com/careers/" },
-  "tata1mg":      { "ats": "careerpage", "renderJs": true, "url": "https://www.1mg.com/careers" }
+  "tata1mg":      { "ats": "careerpage", "renderJs": true, "url": "https://www.1mg.com/careers" },
+  "visa-careers": { "ats": "careerpage", "renderJs": true, "url": "https://corporate.visa.com/en/jobs.html" }
 }
