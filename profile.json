@@ -9,6 +9,6 @@
   "preferredRoles": ["Software Engineer", "Software Developer", "SDE 1"],
   "avoidRoles": ["Senior", "Sr.", "Lead", "Staff", "Principal", "Architect", "Manager", "II", "III"],
   "preferredLocations": ["India", "Bangalore", "Hyderabad", "Pune", "Gurgaon", "Noida", "Delhi", "Mumbai", "Chennai"],
-  "minSalaryLPA": 13,
+  "minSalaryLPA": 0,
   "summary": ""
 }

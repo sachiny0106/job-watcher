@@ -1,4 +1,0 @@
-[
-  { "board": "instahyre", "query": "node.js backend", "location": "bangalore", "minExp": 2, "maxExp": 6 },
-  { "board": "naukri",    "query": "node.js typescript backend", "location": "bangalore", "minExp": 2, "maxExp": 6 }
-]

@@ -26,7 +26,6 @@ export const AtsKindSchema = z.enum([
   "meta",
   "instahyre",
   "naukri",
-  "serpapi",
   "careerpage",
 ]);
 export type AtsKind = z.infer<typeof AtsKindSchema>;
@@ -56,7 +55,7 @@ export const FilterConfigSchema = z.object({
 export type FilterConfig = z.infer<typeof FilterConfigSchema>;
 
 export const SearchSchema = z.object({
-  board: z.enum(["instahyre", "naukri", "serpapi"]),
+  board: z.enum(["instahyre", "naukri"]),
   query: z.string(),
   location: z.string().optional(),
   minExp: z.number().optional(),
