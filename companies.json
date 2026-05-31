@@ -80,6 +80,7 @@
   "wise":         { "ats": "smartrecruiters", "slug": "wise" },
   "visa":         { "ats": "smartrecruiters", "slug": "visa" },
   "bytedance":    { "ats": "smartrecruiters", "slug": "bytedance" },
+  "uber":         { "ats": "smartrecruiters", "slug": "uber" },
 
   "browserstack": { "ats": "workday",         "tenant": "browserstack", "cluster": "wd3",   "site": "External" },
   "alteryx":      { "ats": "workday",         "tenant": "alteryx",      "cluster": "wd108", "site": "AlteryxCareers" },
@@ -95,6 +96,7 @@
   "mastercard":   { "ats": "workday",         "tenant": "mastercard",   "cluster": "wd1",   "site": "CorporateCareers" },
   "zoom":         { "ats": "workday",         "tenant": "zoom",         "cluster": "wd5",   "site": "Zoom" },
   "blackrock":    { "ats": "workday",         "tenant": "blackrock",    "cluster": "wd1",   "site": "BlackRock_Professional" },
+  "samsung":      { "ats": "workday",         "tenant": "sec",          "cluster": "wd3",   "site": "Samsung_Careers" },
 
   "razorpay":     { "ats": "careerpage", "renderJs": true, "url": "https://razorpay.com/jobs/jobs-all/" },
   "swiggy":       { "ats": "careerpage", "renderJs": true, "url": "https://careers.swiggy.com/#/careers/joblist" },
@@ -141,5 +143,12 @@
   "citadel":           { "ats": "careerpage", "renderJs": true, "url": "https://www.citadel.com/careers/open-opportunities/" },
   "jpmorgan":          { "ats": "careerpage", "renderJs": true, "url": "https://careers.jpmorgan.com/global/en/students/programs" },
   "pinelabs":          { "ats": "careerpage", "renderJs": true, "url": "https://pinelabs.com/careers" },
-  "smallcase":         { "ats": "careerpage", "renderJs": true, "url": "https://www.smallcase.com/careers" }
+  "smallcase":         { "ats": "careerpage", "renderJs": true, "url": "https://www.smallcase.com/careers" },
+  "goldmansachs":      { "ats": "careerpage", "renderJs": true, "url": "https://www.goldmansachs.com/careers/students/programs/india/" },
+  "oracle":            { "ats": "careerpage", "renderJs": true, "url": "https://careers.oracle.com/jobs/#en/sites/jobsearch?location=India&locationLevel=country" },
+  "optum":             { "ats": "careerpage", "renderJs": true, "url": "https://careers.unitedhealthgroup.com/job-search-results/?keyword=software+engineer&country=India" },
+  "sinch":             { "ats": "careerpage", "renderJs": true, "url": "https://www.sinch.com/careers/open-positions/" },
+  "intuit":            { "ats": "careerpage", "renderJs": true, "url": "https://jobs.intuit.com/search-jobs/India/27595/2/1269750/22/79/50/2" },
+  "ukg":               { "ats": "careerpage", "renderJs": true, "url": "https://careers.ukg.com/careers/SearchJobs/?40006=%5B%2228065%22%5D&40006_format=6021" },
+  "standardchartered": { "ats": "careerpage", "renderJs": true, "url": "https://scb.taleo.net/careersection/sc_external_career/jobsearch.ftl?lang=en&radiusType=K&searchExpanded=true&radius=1&portal=8170020077&location=185130189" }
 }
