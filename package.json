@@ -7,6 +7,7 @@
   "scripts": {
     "cron": "tsx src/cron.ts",
     "bot": "tsx src/bot.ts",
+    "bot-poll": "tsx src/bot-poll.ts",
     "discover": "tsx src/discovery.ts",
     "build": "tsc -p .",
     "typecheck": "tsc -p . --noEmit"

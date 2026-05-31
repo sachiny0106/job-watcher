@@ -1,0 +1,52 @@
+name: Job Watcher Bot
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: job-watcher-bot
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Poll Telegram and process commands
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_API_KEY_2: ${{ secrets.GOOGLE_API_KEY_2 }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npx tsx src/bot-poll.ts
+
+      - name: Persist companies + offset
+        run: |
+          git config user.name "job-watcher-bot"
+          git config user.email "actions@github.com"
+          git add companies.json .telegram-offset || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: bot processed Telegram updates [skip ci]"
+            for i in 1 2 3; do
+              git pull --rebase origin main || true
+              if git push; then
+                exit 0
+              fi
+              echo "push attempt $i failed, retrying…"
+              sleep 5
+            done
+            exit 1
+          fi
