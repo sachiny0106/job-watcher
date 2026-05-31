@@ -126,5 +126,8 @@
   "tata1mg":      { "ats": "careerpage", "renderJs": true, "url": "https://www.1mg.com/careers" },
   "visa-careers": { "ats": "careerpage", "renderJs": true, "url": "https://corporate.visa.com/en/jobs.html" },
   "blinkit":      { "ats": "careerpage", "renderJs": true, "url": "https://blinkit.com/careers" },
-  "hyperpure":    { "ats": "careerpage", "renderJs": true, "url": "https://www.hyperpure.com/careers" }
+  "hyperpure":    { "ats": "careerpage", "renderJs": true, "url": "https://www.hyperpure.com/careers" },
+  "amazon-careers":    { "ats": "careerpage", "renderJs": true, "url": "https://www.amazon.jobs/en/search?base_query=software+engineer&loc_query=India&sort=recent" },
+  "microsoft-careers": { "ats": "careerpage", "renderJs": true, "url": "https://jobs.careers.microsoft.com/global/en/search?lc=India&exp=Students%20and%20graduates&rt=Individual%20Contributor&et=Full-Time" },
+  "google-careers":    { "ats": "careerpage", "renderJs": true, "url": "https://www.google.com/about/careers/applications/jobs/results/?location=India&target_level=EARLY&employment_type=FULL_TIME" }
 }
