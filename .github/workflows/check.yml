@@ -37,8 +37,17 @@ jobs:
         run: |
           git config user.name "job-watcher-bot"
           git config user.email "actions@github.com"
-          git add state.sqlite companies.json || true
+          git add state.sqlite || true
           if ! git diff --cached --quiet; then
             git commit -m "chore: update state [skip ci]"
-            git push
+            for i in 1 2 3; do
+              git pull --rebase origin main || true
+              if git push; then
+                exit 0
+              fi
+              echo "push attempt $i failed, retrying after rebase…"
+              sleep 5
+            done
+            echo "push failed after 3 attempts"
+            exit 1
           fi
