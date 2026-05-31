@@ -141,24 +141,40 @@ const callNvidia = (p: Provider, prompt: string) =>
     p,
     prompt,
     "https://integrate.api.nvidia.com/v1/chat/completions",
-    process.env.NVIDIA_MODEL || "meta/llama-3.3-70b-instruct"
+    process.env.NVIDIA_MODEL || "meta/llama-3.1-8b-instruct"
   );
 
+const burntKeys = new Set<string>();
+
 async function llmExtract(html: string, baseUrl: string): Promise<ExtractedJob[]> {
-  const providers = shuffled(loadProviders());
-  if (providers.length === 0) return [];
+  const allProviders = loadProviders();
+  const providers = shuffled(allProviders.filter((p) => !burntKeys.has(`${p.kind}:${p.key}`)));
+  if (providers.length === 0) {
+    console.warn(`[careerpage] all ${allProviders.length} providers burnt this run — skipping extract`);
+    return [];
+  }
   const prompt = buildPrompt(stripHtml(html).slice(0, 25_000), baseUrl);
 
   let text: string | null = null;
   for (const p of providers) {
     const tag = `${p.kind} ${p.key.slice(0, 8)}…`;
     try {
-      text = p.kind === "gemini" ? await callGemini(p, prompt) : await callOpenAI(p, prompt);
+      text =
+        p.kind === "gemini"
+          ? await callGemini(p, prompt)
+          : p.kind === "openai"
+          ? await callOpenAI(p, prompt)
+          : await callNvidia(p, prompt);
       if (text) break;
     } catch (err) {
       const ax = err as { response?: { status?: number }; message?: string };
       const status = ax?.response?.status;
-      console.warn(`[careerpage] extract ${tag} failed status=${status} ${ax?.message ?? ""}`);
+      if (status === 401 || status === 403 || status === 429) {
+        burntKeys.add(`${p.kind}:${p.key}`);
+        console.warn(`[careerpage] burning ${tag} for rest of run (status=${status})`);
+      } else {
+        console.warn(`[careerpage] extract ${tag} failed status=${status} ${ax?.message ?? ""}`);
+      }
     }
   }
   if (!text) return [];
