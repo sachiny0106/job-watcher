@@ -32,6 +32,7 @@ jobs:
           GOOGLE_API_KEY_2: ${{ secrets.GOOGLE_API_KEY_2 }}
           GOOGLE_API_KEY_3: ${{ secrets.GOOGLE_API_KEY_3 }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PROFILE_JSON: ${{ secrets.PROFILE_JSON }}
         run: npx tsx src/bot-poll.ts
 
       - name: Persist companies + offset

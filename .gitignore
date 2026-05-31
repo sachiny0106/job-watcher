@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .env
+*.local.json
 *.log
 .DS_Store
 # state.sqlite IS committed by GH Actions, so don't ignore it

@@ -25,8 +25,19 @@ const ProfileSchema = z.object({
 export type Profile = z.infer<typeof ProfileSchema>;
 
 export function loadProfile(): Profile {
-  const raw = fs.readFileSync(PROFILE_PATH, "utf8");
-  return ProfileSchema.parse(JSON.parse(raw));
+  const envRaw = process.env.PROFILE_JSON;
+  if (envRaw && envRaw.trim()) {
+    try {
+      return ProfileSchema.parse(JSON.parse(envRaw));
+    } catch (e) {
+      console.warn("[llm-score] PROFILE_JSON env var failed to parse:", e instanceof Error ? e.message : e);
+    }
+  }
+  const localPath = path.resolve(path.dirname(PROFILE_PATH), "profile.local.json");
+  if (fs.existsSync(localPath)) {
+    return ProfileSchema.parse(JSON.parse(fs.readFileSync(localPath, "utf8")));
+  }
+  return ProfileSchema.parse(JSON.parse(fs.readFileSync(PROFILE_PATH, "utf8")));
 }
 
 export interface FitVerdict {
