@@ -55,7 +55,8 @@ Rules:
 - Resolve relative URLs against BASE URL.
 - Cap at 100 entries.`;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
+  const model = process.env.GEMINI_MODEL || "gemini-flash-latest";
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
   const body = {
     contents: [{ parts: [{ text: prompt }] }],
     generationConfig: {
@@ -81,7 +82,7 @@ Rules:
   try {
     const { data } = await axios.post<{ candidates?: { content?: { parts?: { text?: string }[] } }[] }>(url, body, {
       timeout: 60_000,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "X-goog-api-key": key },
     });
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!text) return [];

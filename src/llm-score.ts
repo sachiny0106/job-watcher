@@ -35,7 +35,7 @@ export interface FitVerdict {
   reasoning: string;
 }
 
-const GEMINI_MODEL = "gemini-2.5-flash";
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
 
 function buildPrompt(job: Job, profile: Profile): string {
   return `You are a strict career filter judging whether a specific job opening is a good fit for a fresher candidate in India. Default to "no" if anything is uncertain. The candidate cannot apply to roles requiring real professional experience.
@@ -247,12 +247,12 @@ export async function scoreJobs(jobs: Job[], profile: Profile, _apiKey: string):
   outer: for (let keyIdx = 0; keyIdx < keys.length; keyIdx++) {
     const key = keys[keyIdx];
     const masked = `${key.slice(0, 10)}…${key.slice(-4)}`;
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
         resp = await axios.post<{ candidates?: { content?: { parts?: { text?: string }[] } }[] }>(url, body, {
           timeout: 60_000,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "X-goog-api-key": key },
         });
         console.log(`[llm-score] succeeded with key ${masked}`);
         break outer;
