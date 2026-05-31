@@ -220,7 +220,7 @@ const BatchSchema = {
   },
 };
 
-type Provider = { kind: "gemini" | "openai"; key: string };
+type Provider = { kind: "gemini" | "openai" | "nvidia"; key: string };
 
 function loadProviders(): Provider[] {
   const out: Provider[] = [];
@@ -228,6 +228,7 @@ function loadProviders(): Provider[] {
     if (typeof v !== "string" || !v.trim()) continue;
     if (/^GOOGLE_API_KEY(_\d+)?$/i.test(k)) out.push({ kind: "gemini", key: v.trim() });
     else if (/^OPENAI_API_KEY(_\d+)?$/i.test(k)) out.push({ kind: "openai", key: v.trim() });
+    else if (/^NVIDIA_API_KEY(_\d+)?$/i.test(k)) out.push({ kind: "nvidia", key: v.trim() });
   }
   const seen = new Set<string>();
   return out.filter((p) => {
@@ -236,6 +237,42 @@ function loadProviders(): Provider[] {
     seen.add(id);
     return true;
   });
+}
+
+async function callNvidia(provider: Provider, prompt: string): Promise<string | null> {
+  const body = {
+    model: process.env.NVIDIA_MODEL || "meta/llama-3.3-70b-instruct",
+    response_format: { type: "json_object" },
+    temperature: 0,
+    max_tokens: 4096,
+    messages: [
+      {
+        role: "system",
+        content: "You return strict JSON only. The user's instruction will specify a JSON array. Wrap it as {\"verdicts\": [...]}.",
+      },
+      { role: "user", content: prompt },
+    ],
+  };
+  const { data } = await axios.post<{ choices?: { message?: { content?: string } }[] }>(
+    "https://integrate.api.nvidia.com/v1/chat/completions",
+    body,
+    {
+      timeout: 60_000,
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.key}` },
+    }
+  );
+  const content = data.choices?.[0]?.message?.content ?? null;
+  if (!content) return null;
+  try {
+    const obj = JSON.parse(content);
+    if (Array.isArray(obj)) return JSON.stringify(obj);
+    if (Array.isArray(obj?.verdicts)) return JSON.stringify(obj.verdicts);
+    const firstArrayKey = Object.keys(obj).find((k) => Array.isArray(obj[k]));
+    if (firstArrayKey) return JSON.stringify(obj[firstArrayKey]);
+    return content;
+  } catch {
+    return content;
+  }
 }
 
 function shuffled<T>(arr: T[]): T[] {
@@ -319,7 +356,12 @@ export async function scoreJobs(jobs: Job[], profile: Profile, _apiKey: string):
   for (const p of providers) {
     const tag = `${p.kind} ${mask(p.key)}`;
     try {
-      text = p.kind === "gemini" ? await callGemini(p, prompt, jobs.length) : await callOpenAI(p, prompt);
+      text =
+        p.kind === "gemini"
+          ? await callGemini(p, prompt, jobs.length)
+          : p.kind === "openai"
+          ? await callOpenAI(p, prompt)
+          : await callNvidia(p, prompt);
       if (text) {
         console.log(`[llm-score] succeeded with ${tag}`);
         break;

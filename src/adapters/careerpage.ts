@@ -11,7 +11,7 @@ interface ExtractedJob {
   postedAt?: string;
 }
 
-type Provider = { kind: "gemini" | "openai"; key: string };
+type Provider = { kind: "gemini" | "openai" | "nvidia"; key: string };
 
 function stripHtml(s: string): string {
   return s
@@ -35,6 +35,7 @@ function loadProviders(): Provider[] {
     if (typeof v !== "string" || !v.trim()) continue;
     if (/^GOOGLE_API_KEY(_\d+)?$/i.test(k)) out.push({ kind: "gemini", key: v.trim() });
     else if (/^OPENAI_API_KEY(_\d+)?$/i.test(k)) out.push({ kind: "openai", key: v.trim() });
+    else if (/^NVIDIA_API_KEY(_\d+)?$/i.test(k)) out.push({ kind: "nvidia", key: v.trim() });
   }
   const seen = new Set<string>();
   return out.filter((p) => {
@@ -98,24 +99,26 @@ async function callGemini(provider: Provider, prompt: string): Promise<string | 
   return data.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
 }
 
-async function callOpenAI(provider: Provider, prompt: string): Promise<string | null> {
+async function callOpenAILike(
+  provider: Provider,
+  prompt: string,
+  endpoint: string,
+  model: string
+): Promise<string | null> {
   const body = {
-    model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+    model,
     response_format: { type: "json_object" },
     temperature: 0,
+    max_tokens: 4096,
     messages: [
       { role: "system", content: "Reply with JSON {\"jobs\": [...]} where jobs is the array described by the user." },
       { role: "user", content: prompt },
     ],
   };
-  const { data } = await axios.post<{ choices?: { message?: { content?: string } }[] }>(
-    "https://api.openai.com/v1/chat/completions",
-    body,
-    {
-      timeout: 60_000,
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.key}` },
-    }
-  );
+  const { data } = await axios.post<{ choices?: { message?: { content?: string } }[] }>(endpoint, body, {
+    timeout: 60_000,
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.key}` },
+  });
   const content = data.choices?.[0]?.message?.content ?? null;
   if (!content) return null;
   try {
@@ -129,6 +132,17 @@ async function callOpenAI(provider: Provider, prompt: string): Promise<string | 
   }
   return content;
 }
+
+const callOpenAI = (p: Provider, prompt: string) =>
+  callOpenAILike(p, prompt, "https://api.openai.com/v1/chat/completions", process.env.OPENAI_MODEL || "gpt-4o-mini");
+
+const callNvidia = (p: Provider, prompt: string) =>
+  callOpenAILike(
+    p,
+    prompt,
+    "https://integrate.api.nvidia.com/v1/chat/completions",
+    process.env.NVIDIA_MODEL || "meta/llama-3.3-70b-instruct"
+  );
 
 async function llmExtract(html: string, baseUrl: string): Promise<ExtractedJob[]> {
   const providers = shuffled(loadProviders());
