@@ -31,6 +31,16 @@
   "elastic":      { "ats": "greenhouse",      "slug": "elastic" },
   "gitlab":       { "ats": "greenhouse",      "slug": "gitlab" },
   "slice":        { "ats": "greenhouse",      "slug": "slice" },
+  "coupang":      { "ats": "greenhouse",      "slug": "coupang" },
+  "harness":      { "ats": "greenhouse",      "slug": "harnessinc" },
+  "chime":        { "ats": "greenhouse",      "slug": "chime" },
+  "coursera":     { "ats": "greenhouse",      "slug": "coursera" },
+  "monzo":        { "ats": "greenhouse",      "slug": "monzo" },
+  "mercury":      { "ats": "greenhouse",      "slug": "mercury" },
+  "justworks":    { "ats": "greenhouse",      "slug": "justworks" },
+  "netlify":      { "ats": "greenhouse",      "slug": "netlify" },
+  "databricks":   { "ats": "greenhouse",      "slug": "databricks" },
+  "planetscale":  { "ats": "greenhouse",      "slug": "planetscale" },
 
   "cred":         { "ats": "lever",           "slug": "cred" },
   "atlassian":    { "ats": "lever",           "slug": "atlassian" },
@@ -39,6 +49,8 @@
   "eternal":      { "ats": "lever",           "slug": "eternal" },
   "spotify":      { "ats": "lever",           "slug": "spotify" },
   "paytm":        { "ats": "lever",           "slug": "paytm" },
+  "palantir":     { "ats": "lever",           "slug": "palantir" },
+  "neon":         { "ats": "lever",           "slug": "neon" },
 
   "notion":       { "ats": "ashby",           "slug": "notion" },
   "ramp":         { "ats": "ashby",           "slug": "ramp" },
@@ -50,12 +62,18 @@
   "openai":       { "ats": "ashby",           "slug": "openai" },
   "1password":    { "ats": "ashby",           "slug": "1password" },
   "supabase":     { "ats": "ashby",           "slug": "supabase" },
+  "replit":       { "ats": "ashby",           "slug": "replit" },
+  "patreon":      { "ats": "ashby",           "slug": "patreon" },
+  "airwallex":    { "ats": "ashby",           "slug": "airwallex" },
+  "deel":         { "ats": "ashby",           "slug": "deel" },
+  "render":       { "ats": "ashby",           "slug": "render" },
 
   "freshworks":   { "ats": "smartrecruiters", "slug": "Freshworks" },
   "servicenow":   { "ats": "smartrecruiters", "slug": "servicenow" },
   "docusign":     { "ats": "smartrecruiters", "slug": "docusign" },
   "canva":        { "ats": "smartrecruiters", "slug": "canva" },
   "unacademy":    { "ats": "smartrecruiters", "slug": "unacademy" },
+  "wise":         { "ats": "smartrecruiters", "slug": "wise" },
 
   "browserstack": { "ats": "workday",         "tenant": "browserstack", "cluster": "wd3",   "site": "External" },
   "alteryx":      { "ats": "workday",         "tenant": "alteryx",      "cluster": "wd108", "site": "AlteryxCareers" },
@@ -65,5 +83,6 @@
   "walmart":      { "ats": "workday",         "tenant": "walmart",      "cluster": "wd5",   "site": "WalmartExternal" },
   "cisco":        { "ats": "workday",         "tenant": "cisco",        "cluster": "wd5",   "site": "Cisco_Careers" },
   "sprinklr":     { "ats": "workday",         "tenant": "sprinklr",     "cluster": "wd1",   "site": "careers" },
-  "zendesk":      { "ats": "workday",         "tenant": "zendesk",      "cluster": "wd1",   "site": "zendesk" }
+  "zendesk":      { "ats": "workday",         "tenant": "zendesk",      "cluster": "wd1",   "site": "zendesk" },
+  "crowdstrike":  { "ats": "workday",         "tenant": "crowdstrike",  "cluster": "wd5",   "site": "crowdstrikecareers" }
 }
