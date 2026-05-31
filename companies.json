@@ -31,6 +31,7 @@
   "elastic":      { "ats": "greenhouse",      "slug": "elastic" },
   "gitlab":       { "ats": "greenhouse",      "slug": "gitlab" },
   "slice":        { "ats": "greenhouse",      "slug": "slice" },
+  "truecaller":   { "ats": "greenhouse",      "slug": "truecaller" },
   "coupang":      { "ats": "greenhouse",      "slug": "coupang" },
   "harness":      { "ats": "greenhouse",      "slug": "harnessinc" },
   "chime":        { "ats": "greenhouse",      "slug": "chime" },
@@ -74,6 +75,8 @@
   "canva":        { "ats": "smartrecruiters", "slug": "canva" },
   "unacademy":    { "ats": "smartrecruiters", "slug": "unacademy" },
   "wise":         { "ats": "smartrecruiters", "slug": "wise" },
+  "visa":         { "ats": "smartrecruiters", "slug": "visa" },
+  "bytedance":    { "ats": "smartrecruiters", "slug": "bytedance" },
 
   "browserstack": { "ats": "workday",         "tenant": "browserstack", "cluster": "wd3",   "site": "External" },
   "alteryx":      { "ats": "workday",         "tenant": "alteryx",      "cluster": "wd108", "site": "AlteryxCareers" },
@@ -87,6 +90,7 @@
   "crowdstrike":  { "ats": "workday",         "tenant": "crowdstrike",  "cluster": "wd5",   "site": "crowdstrikecareers" },
   "dell":         { "ats": "workday",         "tenant": "dell",         "cluster": "wd1",   "site": "External" },
   "mastercard":   { "ats": "workday",         "tenant": "mastercard",   "cluster": "wd1",   "site": "CorporateCareers" },
+  "zoom":         { "ats": "workday",         "tenant": "zoom",         "cluster": "wd5",   "site": "Zoom" },
 
   "razorpay":     { "ats": "careerpage", "renderJs": true, "url": "https://razorpay.com/jobs/jobs-all/" },
   "swiggy":       { "ats": "careerpage", "renderJs": true, "url": "https://careers.swiggy.com/#/careers/joblist" },
@@ -108,5 +112,16 @@
   "shopify":      { "ats": "careerpage", "renderJs": true, "url": "https://www.shopify.com/careers/search" },
   "doordash":     { "ats": "careerpage", "renderJs": true, "url": "https://careers.doordash.com/jobs/?country=India" },
   "ibm":          { "ats": "careerpage", "renderJs": true, "url": "https://www.ibm.com/careers/search?lng=en&q=software+engineer&country=IN" },
-  "paypal":       { "ats": "careerpage", "renderJs": true, "url": "https://careers.pypl.com/jobs" }
+  "paypal":       { "ats": "careerpage", "renderJs": true, "url": "https://careers.pypl.com/jobs" },
+  "zerodha":      { "ats": "careerpage", "renderJs": true, "url": "https://zerodha.com/careers/" },
+  "snap":         { "ats": "careerpage", "renderJs": true, "url": "https://careers.snap.com/jobs" },
+  "olaelectric":  { "ats": "careerpage", "renderJs": true, "url": "https://www.olaelectric.com/careers" },
+  "delhivery":    { "ats": "careerpage", "renderJs": true, "url": "https://www.delhivery.com/careers" },
+  "udaan":        { "ats": "careerpage", "renderJs": true, "url": "https://udaan.com/careers" },
+  "spinny":       { "ats": "careerpage", "renderJs": true, "url": "https://www.spinny.com/careers" },
+  "cashfree":     { "ats": "careerpage", "renderJs": true, "url": "https://www.cashfree.com/careers" },
+  "jupiter":      { "ats": "careerpage", "renderJs": true, "url": "https://jupiter.money/careers/" },
+  "pharmeasy":    { "ats": "careerpage", "renderJs": true, "url": "https://careers.pharmeasy.in/" },
+  "bigbasket":    { "ats": "careerpage", "renderJs": true, "url": "https://www.bigbasket.com/careers/" },
+  "tata1mg":      { "ats": "careerpage", "renderJs": true, "url": "https://www.1mg.com/careers" }
 }
