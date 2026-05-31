@@ -85,7 +85,11 @@
     "mumbai",
     "chennai",
     "kolkata",
-    "ahmedabad"
+    "ahmedabad",
+    "remote",
+    "anywhere",
+    "wfh",
+    "work from home"
   ],
   "maxAgeDays": 21
 }

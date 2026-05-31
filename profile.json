@@ -2,7 +2,7 @@
   "graduationDate": "2026-06",
   "experienceLevel": "fresher",
   "yearsOfExperience": 0,
-  "internshipExperience": "1 year of software engineering internship — built REST APIs and backend services (Node.js / Express / TypeScript). Internships DO NOT count as full-time/non-internship/professional experience for application requirements.",
+  "internshipExperience": "1 year of software engineering internship — built REST APIs and backend services (Node.js / Express / TypeScript / Java). Internships DO NOT count as full-time/non-internship/professional experience for application requirements.",
   "currentRole": "Final year college student, graduating June 2026",
   "skills": [
     "JavaScript",
@@ -21,6 +21,7 @@
     "MySQL",
     "PostgreSQL",
     "Redis",
+    "BullMQ",
     "Git",
     "Docker",
     "Linux",
@@ -30,11 +31,12 @@
     "Problem solving",
     "Data Structures and Algorithms",
     "Machine Learning",
-    "System Design (basics)"
+    "System Design"
   ],
   "preferredRoles": [
     "Software Engineer",
     "Software Developer",
+    "Software Developer I",
     "Backend Engineer",
     "Backend Developer",
     "Full Stack Developer",
@@ -46,6 +48,7 @@
     "Junior Software Engineer",
     "Graduate Engineer Trainee",
     "Software Engineer Trainee",
+    "Assistant Member of Technical Staff",
     "Member of Technical Staff (entry)"
   ],
   "avoidRoles": [
@@ -85,6 +88,6 @@
     "Ahmedabad",
     "Remote (India)"
   ],
-  "minSalaryLPA": 12,
-  "summary": "Recent college graduate (June 2026) with 1 year of backend internship experience (REST APIs, Node.js/Express). Polyglot — comfortable across JavaScript/TypeScript, Java/Spring Boot, and Python (Django/FastAPI). Frontend ready (React/Next.js). Solid in DSA, problem solving, and exposure to ML. Looking for fresher / entry-level Software Engineer, Backend Engineer, Full Stack Engineer, or SDE-1 roles in India (any major tech city or remote-India) at product / well-funded companies paying at least ₹12 LPA base."
+  "minSalaryLPA": 14,
+  "summary": "Recent college graduate (June 2026) with 1 year of backend internship experience (REST APIs, Node.js/Express/Java, C++). Polyglot — comfortable across JavaScript/TypeScript, Java/Spring Boot, and Python (Django/FastAPI). Frontend ready (React/Next.js). Solid in DSA, problem solving, and exposure to ML. Looking for fresher / entry-level Software Engineer, Backend Engineer, Full Stack Engineer, or SDE-1 roles in India (any major tech city or remote-India) at product / well-funded companies paying at least ₹14 LPA base."
 }

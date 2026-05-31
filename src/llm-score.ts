@@ -61,7 +61,7 @@ JOB POSTING
 HARD REJECT RULES (return "no" with confidence 0-3 if ANY of these apply)
 1. Title contains: Senior, Sr., Lead, Staff, Principal, Architect, Manager, Director, Head, VP, II, III, IV, L4, L5, L6, Level 2, Level 3, SDE-2, SDE-3, SDE 2, SDE 3, SE2, SE3
 2. Description requires ≥ 2 years of professional / non-internship / full-time / industry / work experience (treat "3+ years" or similar as a hard reject — internships don't satisfy this)
-3. Job is outside India and there is no explicit India-remote signal
+3. Job is at a physical non-India office AND has no remote/WFH/anywhere option open to India
 4. Company is a service / consulting / IT-outsourcing firm typically paying freshers below ₹${profile.minSalaryLPA} LPA (TCS, Infosys, Wipro, HCL, Cognizant, Capgemini, LTI / LTIMindtree, Tech Mahindra, Mphasis, Hexaware, Genpact, Mindtree, NIIT, Persistent, Tata, Mahindra Tech, Birlasoft, Coforge, Cyient, Zensar, L&T, KPIT)
 5. Description explicitly mentions a CTC / package / salary below ₹${profile.minSalaryLPA} LPA
 
@@ -69,7 +69,7 @@ ACCEPT RULES — return "yes" (score 8-10) ONLY if ALL of these hold:
 - Fresher-appropriate role (SDE-1 / SDE I / Software Engineer / Associate / Junior / Graduate / Entry-level / no level suffix)
 - Description either says ≤ 1 year, "fresher", "new grad", "entry level", "0-1 years", "0-2 years", OR makes no explicit experience requirement
 - At least one of the candidate's skills overlaps with the role's stack
-- Indian location or remote-India
+- Location is India / Indian city OR fully remote (remote-anywhere / remote-global / WFH without a non-India country restriction)
 - Company is a known product / well-funded / top-tier firm likely paying ≥ ₹${profile.minSalaryLPA} LPA to a fresher (FAANG, Microsoft, Amazon, Google, Apple, Meta, Stripe, Razorpay, Atlassian, Postman, Uber, Adobe, Salesforce, PhonePe, CRED, Swiggy, Zomato, Flipkart, Walmart, Coinbase, ByteDance, ServiceNow, Oracle, Nvidia, Intuit, Booking, Airbnb, Hasura, Browserstack, Freshworks, Zerodha)
 
 "maybe" (score 4-7) — entry-level, decent skill overlap, India, but company unknown or salary uncertain.
@@ -169,10 +169,14 @@ CANDIDATE PROFILE
 - Preferred locations: ${profile.preferredLocations.join(", ")}
 - Minimum base salary: ₹${profile.minSalaryLPA} LPA (Lakhs Per Annum)
 
+LOCATION RULE
+- ACCEPT if job location includes India, any Indian city (Bangalore/Bengaluru, Hyderabad, Pune, Mumbai, Delhi, Gurgaon/Gurugram, Noida, Chennai, Kolkata, Ahmedabad, NCR), OR is fully remote / remote-global / remote-anywhere / work-from-home with no country restriction excluding India
+- REJECT if job is at a physical non-India office (USA, UK, Singapore, etc.) with no remote option, OR remote-but-restricted to a non-India country only (e.g. "Remote US only", "Remote EMEA")
+
 HARD REJECT (fit="no", score 0-3) if ANY:
 1. Title contains: Senior, Sr., Lead, Staff, Principal, Architect, Manager, Director, Head, VP, II, III, IV, L4, L5, L6, Level 2, Level 3, SDE-2, SDE-3, SDE 2, SDE 3, SE2, SE3
 2. Description requires ≥ 2 years of professional / non-internship / full-time / industry / work experience
-3. Job is outside India and no India-remote signal
+3. Location fails the LOCATION RULE above (physical office outside India with no remote-for-India option)
 4. Service / consulting / IT-outsourcing company likely paying freshers < ₹${profile.minSalaryLPA} LPA (TCS, Infosys, Wipro, HCL, Cognizant, Capgemini, LTI/LTIMindtree, Tech Mahindra, Mphasis, Hexaware, Genpact, Persistent, Mindtree, Birlasoft, Coforge, Cyient, Zensar)
 5. Description states a package below ₹${profile.minSalaryLPA} LPA
 
@@ -180,7 +184,7 @@ ACCEPT (fit="yes", score 8-10) ONLY if ALL:
 - Fresher-appropriate (SDE-1 / SDE I / Software Engineer / Associate / Junior / Graduate / Entry-level / unranked)
 - ≤ 1 year experience required OR no explicit experience requirement OR mentions fresher/new-grad/entry-level
 - Candidate's skills overlap with the role's stack
-- India / Indian city / remote-India
+- Passes LOCATION RULE (India OR remote-anywhere — companies do not need to be Indian)
 - Top-tier product / well-funded company likely paying ≥ ₹${profile.minSalaryLPA} LPA fresher base (FAANG, Microsoft, Amazon, Google, Apple, Meta, Stripe, Razorpay, Atlassian, Postman, Uber, Adobe, Salesforce, PhonePe, CRED, Swiggy, Zomato, Flipkart, Walmart, Coinbase, ByteDance, ServiceNow, Oracle, Nvidia, Intuit, Booking, Airbnb, Hasura, Browserstack, Freshworks, Zerodha, Groww, Ramp)
 
 "maybe" (score 4-7) — entry-level + skill overlap + India, but company unknown or salary uncertain.
