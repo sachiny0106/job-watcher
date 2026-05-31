@@ -84,5 +84,14 @@
   "cisco":        { "ats": "workday",         "tenant": "cisco",        "cluster": "wd5",   "site": "Cisco_Careers" },
   "sprinklr":     { "ats": "workday",         "tenant": "sprinklr",     "cluster": "wd1",   "site": "careers" },
   "zendesk":      { "ats": "workday",         "tenant": "zendesk",      "cluster": "wd1",   "site": "zendesk" },
-  "crowdstrike":  { "ats": "workday",         "tenant": "crowdstrike",  "cluster": "wd5",   "site": "crowdstrikecareers" }
+  "crowdstrike":  { "ats": "workday",         "tenant": "crowdstrike",  "cluster": "wd5",   "site": "crowdstrikecareers" },
+
+  "razorpay":     { "ats": "careerpage", "renderJs": true, "url": "https://razorpay.com/jobs/jobs-all/" },
+  "swiggy":       { "ats": "careerpage", "renderJs": true, "url": "https://careers.swiggy.com/#/careers/joblist" },
+  "netflix":      { "ats": "careerpage", "renderJs": true, "url": "https://explore.jobs.netflix.net/careers?Teams=Engineering" },
+  "coinbase":     { "ats": "careerpage", "renderJs": true, "url": "https://www.coinbase.com/careers/positions" },
+  "flipkart":     { "ats": "careerpage", "renderJs": true, "url": "https://www.flipkartcareers.com/#!/joblist" },
+  "nykaa":        { "ats": "careerpage", "renderJs": true, "url": "https://careers.nykaa.com" },
+  "myntra":       { "ats": "careerpage", "renderJs": true, "url": "https://careers.myntra.com" },
+  "zomato":       { "ats": "careerpage", "renderJs": true, "url": "https://www.zomato.com/careers" }
 }

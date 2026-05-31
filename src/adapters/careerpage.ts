@@ -102,21 +102,50 @@ Rules:
   }
 }
 
+async function renderWithPlaywright(url: string, waitFor?: string): Promise<string> {
+  const { chromium } = await import("playwright");
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const ctx = await browser.newContext({ userAgent: UA });
+    const page = await ctx.newPage();
+    await page.goto(url, { waitUntil: "networkidle", timeout: 45_000 });
+    if (waitFor) {
+      try {
+        await page.waitForSelector(waitFor, { timeout: 15_000 });
+      } catch {
+        // continue with whatever loaded
+      }
+    } else {
+      await page.waitForTimeout(2500);
+    }
+    return await page.content();
+  } finally {
+    await browser.close();
+  }
+}
+
 export const careerpageAdapter: Adapter = {
   kind: "careerpage" as never,
   async fetch(config: CompanyConfig, company: string): Promise<Job[]> {
-    const url = (config as CompanyConfig & { url?: string }).url;
+    const url = config.url;
     if (!url) throw new Error(`careerpage adapter needs 'url' for ${company}`);
 
-    const { data: html } = await axios.get<string>(url, {
-      timeout: 25_000,
-      maxRedirects: 5,
-      headers: { "User-Agent": UA, Accept: "text/html,*/*" },
-      responseType: "text",
-      transformResponse: (d) => d,
-    });
+    let html: string;
+    if (config.renderJs) {
+      console.log(`[careerpage] ${company}: rendering ${url} with playwright…`);
+      html = await renderWithPlaywright(url, config.waitFor);
+    } else {
+      const { data } = await axios.get<string>(url, {
+        timeout: 25_000,
+        maxRedirects: 5,
+        headers: { "User-Agent": UA, Accept: "text/html,*/*" },
+        responseType: "text",
+        transformResponse: (d) => d,
+      });
+      html = typeof data === "string" ? data : String(data);
+    }
 
-    const extracted = await geminiExtract(typeof html === "string" ? html : String(html), url);
+    const extracted = await geminiExtract(html, url);
     return extracted.map((j) => ({
       id: `cp-${hash(j.url || j.title)}`,
       company,

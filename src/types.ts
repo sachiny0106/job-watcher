@@ -38,6 +38,8 @@ export const CompanyConfigSchema = z.object({
   site: z.string().optional(),
   cluster: z.string().optional(),
   url: z.string().url().optional(),
+  renderJs: z.boolean().optional(),
+  waitFor: z.string().optional(),
 });
 export type CompanyConfig = z.infer<typeof CompanyConfigSchema>;
 
