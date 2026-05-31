@@ -55,6 +55,7 @@
   "palantir":     { "ats": "lever",           "slug": "palantir" },
   "neon":         { "ats": "lever",           "slug": "neon" },
   "zeta":         { "ats": "lever",           "slug": "zeta" },
+  "fampay":       { "ats": "lever",           "slug": "fampay" },
 
   "notion":       { "ats": "ashby",           "slug": "notion" },
   "ramp":         { "ats": "ashby",           "slug": "ramp" },
