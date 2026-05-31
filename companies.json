@@ -85,6 +85,8 @@
   "sprinklr":     { "ats": "workday",         "tenant": "sprinklr",     "cluster": "wd1",   "site": "careers" },
   "zendesk":      { "ats": "workday",         "tenant": "zendesk",      "cluster": "wd1",   "site": "zendesk" },
   "crowdstrike":  { "ats": "workday",         "tenant": "crowdstrike",  "cluster": "wd5",   "site": "crowdstrikecareers" },
+  "dell":         { "ats": "workday",         "tenant": "dell",         "cluster": "wd1",   "site": "External" },
+  "mastercard":   { "ats": "workday",         "tenant": "mastercard",   "cluster": "wd1",   "site": "CorporateCareers" },
 
   "razorpay":     { "ats": "careerpage", "renderJs": true, "url": "https://razorpay.com/jobs/jobs-all/" },
   "swiggy":       { "ats": "careerpage", "renderJs": true, "url": "https://careers.swiggy.com/#/careers/joblist" },
@@ -93,5 +95,18 @@
   "flipkart":     { "ats": "careerpage", "renderJs": true, "url": "https://www.flipkartcareers.com/#!/joblist" },
   "nykaa":        { "ats": "careerpage", "renderJs": true, "url": "https://careers.nykaa.com" },
   "myntra":       { "ats": "careerpage", "renderJs": true, "url": "https://careers.myntra.com" },
-  "zomato":       { "ats": "careerpage", "renderJs": true, "url": "https://www.zomato.com/careers" }
+  "zomato":       { "ats": "careerpage", "renderJs": true, "url": "https://www.zomato.com/careers" },
+  "phonepe":      { "ats": "careerpage", "renderJs": true, "url": "https://www.phonepe.com/careers/job-openings/" },
+  "ola":          { "ats": "careerpage", "renderJs": true, "url": "https://www.olacabs.com/careers" },
+  "juspay":       { "ats": "careerpage", "renderJs": true, "url": "https://juspay.in/careers" },
+  "urbancompany": { "ats": "careerpage", "renderJs": true, "url": "https://www.urbancompany.com/career" },
+  "acko":         { "ats": "careerpage", "renderJs": true, "url": "https://www.acko.com/careers" },
+  "makemytrip":   { "ats": "careerpage", "renderJs": true, "url": "https://careers.makemytrip.com/" },
+  "dream11":      { "ats": "careerpage", "renderJs": true, "url": "https://www.dream11.com/careers" },
+  "klarna":       { "ats": "careerpage", "renderJs": true, "url": "https://www.klarna.com/careers/" },
+  "revolut":      { "ats": "careerpage", "renderJs": true, "url": "https://www.revolut.com/careers/" },
+  "shopify":      { "ats": "careerpage", "renderJs": true, "url": "https://www.shopify.com/careers/search" },
+  "doordash":     { "ats": "careerpage", "renderJs": true, "url": "https://careers.doordash.com/jobs/?country=India" },
+  "ibm":          { "ats": "careerpage", "renderJs": true, "url": "https://www.ibm.com/careers/search?lng=en&q=software+engineer&country=IN" },
+  "paypal":       { "ats": "careerpage", "renderJs": true, "url": "https://careers.pypl.com/jobs" }
 }
